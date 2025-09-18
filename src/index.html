@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: 'unsafe-inline' 'unsafe-eval'">
+    <title>TinkerPad</title>
+<!--    <link rel="stylesheet" href="./index.css" />-->
+</head>
+<body>
+<div id="app">
+    <header id="topbar">
+        <div class="brand">TinkerPad</div>
+        <div class="actions">
+            <button id="runBtn">Run (Ctrl+Enter)</button>
+            <label class="toggle"><input type="checkbox" id="autorun"> Auto-run</label>
+            <button id="addLibBtn">Add Library</button>
+            <button id="saveBtn">Save Playground</button>
+            <button id="newBtn">New</button>
+        </div>
+    </header>
+
+    <div id="container">
+        <aside id="sidebar">
+            <h4>Playgrounds</h4>
+            <ul id="playgroundList"></ul>
+        </aside>
+
+        <main id="main">
+            <div id="split">
+                <div id="editor" class="pane"></div>
+                <div id="console" class="pane">
+                    <div id="consoleToolbar">
+                        <button id="clearConsoleBtn">Clear</button>
+                        <label><input id="filterLogs" placeholder="filter" /></label>
+                    </div>
+                    <div id="consoleOutput"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- sandbox iframe (hidden visually) -->
+    <iframe id="sandbox" sandbox="allow-scripts" style="display:none;"></iframe>
+</div>
+
+<!--<script type="module" src="./renderer.js"></script>-->
+</body>
+</html>

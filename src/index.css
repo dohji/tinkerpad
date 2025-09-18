@@ -1,0 +1,33 @@
+:root{
+    --bg:#0f1724;
+    --panel:#0b1220;
+    --muted:#9aa4b2;
+    --accent:#60a5fa;
+    --glass: rgba(255,255,255,0.03);
+    --radius:10px;
+}
+
+html,body,#app{height:100%;margin:0;background:var(--bg);font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+
+#topbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;color:white;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);box-shadow: 0 1px 0 rgba(255,255,255,0.02);}
+
+.brand{font-weight:700;letter-spacing:0.6px}
+.actions button, .actions .toggle{margin-left:8px;padding:6px 10px;border-radius:6px;border:0;background:var(--glass);color:var(--muted);cursor:pointer}
+.actions button:hover{background:rgba(255,255,255,0.04)}
+
+#container{display:flex;height:calc(100% - 56px);overflow:hidden}
+#sidebar{width:260px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);padding:12px;border-right:1px solid rgba(255,255,255,0.02);color:var(--muted)}
+#sidebar h4{margin:0 0 8px 0;color:white}
+#playgroundList{list-style:none;padding:0;margin:0;overflow:auto;max-height:100%}
+#playgroundList li{padding:8px;border-radius:6px;margin-bottom:6px;cursor:pointer;background:transparent;color:var(--muted)}
+#playgroundList li:hover{background:rgba(255,255,255,0.02);color:white}
+
+#main{flex:1;display:flex;flex-direction:column;padding:12px}
+#split{display:flex;flex:1;gap:10px}
+.pane{flex:1;background:var(--panel);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+#editor{min-width:300px}
+#consoleToolbar{padding:8px;border-bottom:1px solid rgba(255,255,255,0.02);color:var(--muted)}
+#consoleOutput{padding:8px;flex:1;overflow:auto;color:var(--muted);font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace}
+.console-line.log{color:#cbd5e1}
+.console-line.error{color:#ffb4b4}
+.console-line.warn{color:#ffd89b}
