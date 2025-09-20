@@ -9,6 +9,11 @@ contextBridge.exposeInMainWorld('tinkerpad', {
     savePlayground: (playground) => ipcRenderer.invoke('tinkerpad:save-playground', playground),
     deletePlayground: (id) => ipcRenderer.invoke('tinkerpad:delete-playground', id),
 
+    onRunCode: (callback) => ipcRenderer.on('run-code', callback),
+    onClearConsole: (callback) => ipcRenderer.on('clear-console', callback),
+    onSavePlayground: (callback) => ipcRenderer.on('save-playground', callback),
+    onNewPlayground: (callback) => ipcRenderer.on('new-playground', callback),
+
     // simple UX helpers
     openExternal: (url) => ipcRenderer.invoke('tinkerpad:open-external', url)
 });

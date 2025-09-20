@@ -2,46 +2,70 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: 'unsafe-inline' 'unsafe-eval'"> -->
-    <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' 'unsafe-inline' data: https://cdnjs.cloudflare.com;"> -->
     <title>TinkerPad</title>
 </head>
 <body>
-<div id="app" class="h-screen m-0 bg-slate-900 font-inter flex flex-col">
-    <header id="topbar" class="h-14 flex items-center justify-between px-4 text-white bg-gradient-to-b from-white/5 to-transparent shadow-sm">
+
+    <!-- Add this right after <body> -->
+<div id="splash" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; display: flex; align-items: center; justify-content: center; z-index: 9999;">
+    <img src="/assets/icon-png.png" alt="A static image" class="size-20" style="width: 60px; height: 60px;"> 
+  </div>
+   
+<div id="app" class="h-screen m-0 bg-slate-900 font-inter flex flex-col">  
+    <header id="topbar" class="h-14 flex items-center justify-between px-4 text-white bg-gradient-to-b from-white/5 to-transparent shadow-sm drag-region">
         <div class="flex items-center gap-4">
-            <div class="brand font-bold tracking-wider">TinkerPad</div>
-            <div class="flex items-center gap-2">
-                <span id="currentPlaygroundName" class="text-slate-300">New Playground</span>
-                <button id="playgroundDropdown" class="text-slate-400 hover:text-white cursor-pointer">
+
+            <!-- Space for macOS traffic lights -->
+            <div class="traffic-lights-space flex-shrink-0"></div>
+
+            <!-- <img src="/assets/icon-png.png" alt="A static image" class="size-8"> -->  
+            <div class="brand font-bold tracking-wider no-drag">TinkerPad</div>
+            <div class="flex items-center gap-2 no-drag">
+                    <button id="playgroundDropdown" class="px-3 py-1.5 rounded-md border-0 text-slate-400 cursor-pointer hover:bg-white/10 flex items-center gap-2">
+                    <span id="currentPlaygroundName" class="text-slate-300 text-sm">New Playground</span>
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </button>
             </div>
         </div>
-        <div class="actions flex items-center gap-2">
-            <button id="runBtn" class="px-3 py-1.5 rounded-md border-0 bg-white/5 text-slate-300 cursor-pointer hover:bg-white/10">Run (Ctrl+Enter)</button>
-            <label class="toggle flex items-center gap-2 px-3 py-1.5 rounded-md border-0 bg-white/5 text-slate-300 cursor-pointer hover:bg-white/10">
-                <input type="checkbox" id="autorun" class="cursor-pointer"> Auto-run
-            </label>
-            <button id="saveBtn" class="px-3 py-1.5 rounded-md border-0 bg-white/5 text-slate-300 cursor-pointer hover:bg-white/10">Save Playground</button>
-            <button id="newBtn" class="px-3 py-1.5 rounded-md border-0 bg-white/5 text-slate-300 cursor-pointer hover:bg-white/10">New</button>
+        <div class="actions flex items-center gap-2 no-drag">
+            <button id="runBtn" class="px-3 py-1.5 rounded-md border-0 bg-green-700 text-white cursor-pointer hover:bg-green-800 text-sm">Run (Ctrl+Enter)</button>
+            <button id="saveBtn" class="px-3 py-1.5 rounded-md border-0 bg-white/5 text-slate-300 cursor-pointer hover:bg-white/10 text-sm">Save Playground</button>
+            <button id="newBtn" class="px-3 py-1.5 rounded-md border-0 bg-white/5 text-slate-300 cursor-pointer hover:bg-white/10 text-sm">New</button>
+
+            <!-- Add this to the right side of actions for Windows/Linux -->
+            <!-- <div class="window-controls flex items-center gap-1 ml-2 no-drag" style="display: none;" id="windowControls">
+                <button class="w-8 h-8 rounded hover:bg-white/10" onclick="window.electronAPI.minimize()">−</button>
+                <button class="w-8 h-8 rounded hover:bg-white/10" onclick="window.electronAPI.maximize()">□</button>
+                <button class="w-8 h-8 rounded hover:bg-red-500" onclick="window.electronAPI.close()">×</button>
+            </div> -->
+
         </div>
     </header>
 
     <div id="container" class="flex flex-1 overflow-hidden">
-        <aside id="sidebar" class="w-65 bg-gradient-to-b from-white/10 to-transparent p-3 border-r border-white/5 text-slate-300 flex flex-col">
-            <div class="mb-6">
-                <h4 class="m-0 mb-2 text-white">Playgrounds</h4>
+        <!-- Sidebar -->
+        <aside id="sidebar" class="bg-gradient-to-b from-white/10 to-transparent p-3 border-r border-white/5 text-slate-300 flex flex-col transition-all duration-200" style="width: 280px; min-width: 200px;">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="m-0 text-white font-semibold">Libraries</h4>
+                <button id="collapseSidebar" class="collapse-btn text-slate-400 hover:text-white p-1 rounded">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+            </div>  
+            
+            <!-- <div class="mb-6">
+                <h4 class="m-0 mb-2 text-white text-sm">Playgrounds</h4>
                 <ul id="playgroundList" class="list-none p-0 m-0 overflow-auto max-h-40"></ul>
-            </div>
+            </div> -->
             
             <div class="flex-1">
-                <h4 class="m-0 mb-2 text-white">Libraries</h4>
+                <!-- <h4 class="m-0 mb-2 text-white text-sm">Libraries</h4> -->
                 <div class="mb-3">
                     <div class="flex gap-2">
-                        <input type="text" id="libraryUrlInput" placeholder="CDN URL" 
+                        <input type="text" id="libraryUrlInput" placeholder="cdn url ..." 
                                class="flex-1 px-2 py-1 text-sm bg-slate-700 text-white rounded border border-slate-600 focus:border-blue-500 focus:outline-none">
                         <button id="addLibraryBtn" class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-500">Add</button>
                     </div>
@@ -50,24 +74,49 @@
             </div>
         </aside>
 
-        <main id="main" class="flex-1 flex flex-col p-3">
-            <div id="split" class="flex flex-1 gap-2.5">
-                <div id="editor" class="pane flex-1 bg-slate-800 rounded-lg overflow-hidden flex flex-col shadow-lg min-w-[300px]"></div>
-                <div id="console" class="pane flex-1 bg-slate-800 rounded-lg overflow-hidden flex flex-col shadow-lg">
-                    <div id="consoleToolbar" class="p-2 border-b border-white/5 text-slate-300 flex items-center gap-2">
-                        <button id="clearConsoleBtn" class="px-2 py-1 rounded text-sm bg-white/5 text-slate-300 hover:bg-white/10">Clear</button>
-                        <label class="flex items-center">
-                            <input id="filterLogs" placeholder="filter" class="px-2 py-1 rounded text-sm bg-white/5 text-slate-300 border-0 outline-none" />
-                        </label>
+        <!-- Main content area -->
+        <main id="main" class="flex-1 flex flex-col p-3 min-w-0">
+            <div id="split" class="flex flex-1 gap-2.5 min-h-0">
+                <!-- Editor -->
+                <div id="editor" class="pane flex-1 bg-slate-800 rounded-lg overflow-hidden flex flex-col shadow-lg" style="min-width: 400px;"></div>
+                
+                <!-- Console resize handle -->
+                <div id="consoleHandle" class="resize-handle w-1 bg-transparent hover:bg-blue-500/50 flex-shrink-0"></div>
+                
+                <!-- Console -->
+                <div id="console" class="pane bg-slate-800 rounded-lg overflow-hidden flex flex-col shadow-lg transition-all duration-200" style="width: 400px; min-width: 250px;">
+                    <div id="consoleToolbar" class="p-2 border-b border-white/5 text-slate-300 flex items-center justify-between">
+                        <h4 class="m-0 text-white font-semibold text-sm">Console</h4>
+                        <div class="flex items-center gap-2">
+                            <button id="clearConsoleBtn" class="px-2 py-1 rounded text-sm bg-white/5 text-slate-300 hover:bg-white/10">Clear</button>
+                            <button id="collapseConsole" class="collapse-btn text-slate-400 hover:text-white p-1 rounded">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                    <div id="consoleOutput" class="p-2 flex-1 overflow-auto text-slate-300 font-mono"></div>
+                    <div id="consoleOutput" class="p-2 flex-1 overflow-y-auto text-slate-300 font-mono text-sm"></div>
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- Collapsed sidebar toggle button -->
+    <button id="expandSidebar" class="fixed left-2 top-20 bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white p-2 rounded-r-md shadow-lg z-10 hidden">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+    </button>
+
+    <!-- Collapsed console toggle button -->
+    <button id="expandConsole" class="fixed right-2 top-20 bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white p-2 rounded-l-md shadow-lg z-10 hidden">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5l-7 7 7 7"></path>
+        </svg>
+    </button>
+
     <!-- sandbox iframe (hidden visually) -->
-    <!-- <iframe id="sandbox" sandbox="allow-scripts allow-same-origin" style="display:none;"></iframe> -->
     <iframe id="sandbox" src="sandbox.html" sandbox="allow-scripts" style="display:none;"></iframe>
 </div>
 
@@ -85,10 +134,24 @@
     </div>
 </div>
 
+<!-- Modal for Delete Playground -->
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-slate-800 rounded-lg p-6 w-96 max-w-md mx-4">
+      <h3 class="text-white text-lg font-semibold mb-4">Delete Playground</h3>
+      <p class="text-slate-300 mb-4">
+        Are you sure you want to delete "<span id="deletePlaygroundName" class="font-semibold"></span>"?
+      </p>
+      <div class="flex gap-2 justify-end">
+        <button id="cancelDelete" class="px-4 py-2 bg-slate-600 text-white rounded-md hover:bg-slate-500">Cancel</button>
+        <button id="confirmDelete" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500">Delete</button>
+      </div>
+    </div>
+  </div>
+
 <!-- Playground Dropdown -->
-<div id="playgroundDropdownMenu" class="absolute top-12 left-4 bg-slate-800 border border-slate-600 rounded-lg shadow-lg z-50 hidden min-w-64">
+<div id="playgroundDropdownMenu" class="absolute top-12 left-4 bg-slate-800 border border-slate-600 rounded-lg z-50 hidden min-w-64 shadow-xl">
     <div class="p-2">
-        <div class="text-slate-400 text-sm px-2 py-1">Select Playground</div>
+        <div class="text-slate-400 text-xs px-2 py-1 mb-2">Saved Playgrounds</div>
         <ul id="playgroundDropdownList" class="space-y-1"></ul>
         <div id="noPlaygroundsMessage" class="text-slate-400 text-sm px-2 py-4 text-center hidden">
             No saved playgrounds

@@ -46,3 +46,81 @@ html, body {
     color: #fde047;
   }
 }
+
+.resize-handle {
+  cursor: col-resize;
+  user-select: none;
+}
+.resize-handle:hover {
+  background-color: rgba(59, 130, 246, 0.5);
+}
+.resize-handle.dragging {
+  background-color: rgba(59, 130, 246, 0.8);
+}
+.collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden;
+}
+.collapse-btn {
+  transition: transform 0.2s ease;
+}
+.collapse-btn.rotated {
+  transform: rotate(180deg);
+}
+
+/* Console specific styles */
+#consoleOutput {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+}
+
+#consoleOutput::-webkit-scrollbar {
+  width: 6px;
+}
+
+#consoleOutput::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#consoleOutput::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.3);
+  border-radius: 3px;
+}
+
+#consoleOutput::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(148, 163, 184, 0.5);
+}
+
+.console-line {
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+.console-line:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+}
+
+
+/* Frameless window styles */
+.drag-region {
+  -webkit-app-region: drag;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.no-drag {
+  -webkit-app-region: no-drag;
+}
+
+/* macOS traffic light positioning */
+.traffic-lights-space {
+  width: 78px; /* Space for macOS traffic lights */
+  height: 100%;
+  position: relative;
+}
+
+#topbar {
+  height: 52px; /* Slightly taller to better center with traffic lights */
+}

@@ -30,13 +30,13 @@ module.exports = {
             },
           ],
         }),
-        // new CopyWebpackPlugin({
-        //   patterns: [
-        //     {
-        //       from: path.resolve(__dirname, 'static/sandbox.html'),
-        //       to: path.resolve(__dirname, '.webpack/renderer/main_window'),
-        //     },
-        //   ],
-        // }),
+        new CopyWebpackPlugin({
+          patterns: [
+            {
+              from: path.resolve(__dirname, 'assets'),
+              to: 'assets'
+            }
+          ]
+        })
     ]
 };

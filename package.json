@@ -9,7 +9,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "lint": "echo \"No linting configured\"",
+    "dist": "electron-builder"
   },
   "keywords": [],
   "author": {
@@ -33,6 +34,7 @@
     "copy-webpack-plugin": "^13.0.1",
     "css-loader": "^7.1.2",
     "electron": "38.1.2",
+    "electron-builder": "^26.0.12",
     "node-loader": "^2.1.0",
     "postcss": "^8.5.6",
     "postcss-loader": "^8.2.0",
@@ -45,5 +47,19 @@
     "monaco-editor": "^0.53.0",
     "monaco-editor-webpack-plugin": "^7.1.0",
     "uuid": "^13.0.0"
+  },
+
+  "build": {
+  "appId": "com.tinkerpad.app",
+  "productName": "TinkerPad",
+  "win": {
+    "icon": "assets/icon.ico"
+  },
+  "mac": {
+    "icon": "assets/icon.icns"
+  },
+  "linux": {
+    "icon": "assets/icon.png"
   }
+}
 }

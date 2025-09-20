@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>TinkerPad</title>
+</head>
+<body>
+<div id="app" class="h-screen m-0 bg-slate-900 font-inter flex flex-col">
+    <header id="topbar" class="h-14 flex items-center justify-between px-4 text-white bg-gradient-to-b from-white/5 to-transparent shadow-sm">
+        <div class="flex items-center gap-4">
+            <div class="brand font-bold tracking-wider">TinkerPad</div>
+            <div class="flex items-center gap-2">
+                <span id="currentPlaygroundName" class="text-slate-300">New Playground</span>
+                <button id="playgroundDropdown" class="text-slate-400 hover:text-white cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="actions flex items-center gap-2">
+            <button id="runBtn" class="px-3 py-1.5 rounded-md border-0 bg-white/5 text-slate-300 cursor-pointer hover:bg-white/10">Run (Ctrl+Enter)</button>
+            <button id="saveBtn" class="px-3 py-1.5 rounded-md border-0 bg-white/5 text-slate-300 cursor-pointer hover:bg-white/10">Save Playground</button>
+            <button id="newBtn" class="px-3 py-1.5 rounded-md border-0 bg-white/5 text-slate-300 cursor-pointer hover:bg-white/10">New</button>
+        </div>
+    </header>
+
+    <div id="container" class="flex flex-1 overflow-hidden">
+        <aside id="sidebar" class="w-65 bg-gradient-to-b from-white/10 to-transparent p-3 border-r border-white/5 text-slate-300 flex flex-col">
+            <div class="mb-6">
+                <h4 class="m-0 mb-2 text-white">Playgrounds</h4>
+                <ul id="playgroundList" class="list-none p-0 m-0 overflow-auto max-h-40"></ul>
+            </div>
+            
+            <div class="flex-1">
+                <h4 class="m-0 mb-2 text-white">Libraries</h4>
+                <div class="mb-3">
+                    <div class="flex gap-2">
+                        <input type="text" id="libraryUrlInput" placeholder="CDN URL" 
+                               class="flex-1 px-2 py-1 text-sm bg-slate-700 text-white rounded border border-slate-600 focus:border-blue-500 focus:outline-none">
+                        <button id="addLibraryBtn" class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-500">Add</button>
+                    </div>
+                </div>
+                <ul id="librariesList" class="list-none p-0 m-0 space-y-1"></ul>
+            </div>
+        </aside>
+
+        <main id="main" class="flex-1 flex flex-col p-3">
+            <div id="split" class="flex flex-1 gap-2.5">
+                <div id="editor" class="pane flex-1 bg-slate-800 rounded-lg overflow-hidden flex flex-col shadow-lg min-w-[300px]"></div>
+                <div id="console" class="pane flex-1 bg-slate-800 rounded-lg overflow-hidden flex flex-col shadow-lg">
+                    <div id="consoleToolbar" class="p-2 border-b border-white/5 text-slate-300 flex justify-end gap-2">
+                        <button id="clearConsoleBtn" class="px-2 py-1 rounded text-sm bg-white/5 text-slate-300 hover:bg-white/10">Clear</button>
+                    </div>
+                    <div id="consoleOutput" class="p-2 flex-1 overflow-y-auto text-slate-300 font-mono"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- sandbox iframe (hidden visually) -->
+    <iframe id="sandbox" src="sandbox.html" sandbox="allow-scripts" style="display:none;"></iframe>
+</div>
+
+<!-- Modal for Save Playground -->
+<div id="saveModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-slate-800 rounded-lg p-6 w-96 max-w-md mx-4">
+        <h3 class="text-white text-lg font-semibold mb-4">Save Playground</h3>
+        <input type="text" id="playgroundTitle" placeholder="Enter playground title" 
+               class="w-full px-3 py-2 bg-slate-700 text-white rounded-md border border-slate-600 focus:border-blue-500 focus:outline-none mb-4" 
+               value="Untitled">
+        <div class="flex gap-2 justify-end">
+            <button id="cancelSave" class="px-4 py-2 bg-slate-600 text-white rounded-md hover:bg-slate-500">Cancel</button>
+            <button id="confirmSave" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Playground Dropdown -->
+<div id="playgroundDropdownMenu" class="absolute top-12 left-4 bg-slate-800 border border-slate-600 rounded-lg shadow-lg z-50 hidden min-w-64">
+    <div class="p-2">
+        <div class="text-slate-400 text-sm px-2 py-1">Select Playground</div>
+        <ul id="playgroundDropdownList" class="space-y-1"></ul>
+        <div id="noPlaygroundsMessage" class="text-slate-400 text-sm px-2 py-4 text-center hidden">
+            No saved playgrounds
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

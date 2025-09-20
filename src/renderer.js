@@ -7,10 +7,110 @@ let loadedPlaygrounds = [];
 let libraries = []; // array of CDN URLs for current playground
 let isPlaygroundDropdownOpen = false;
 
+
 document.addEventListener('DOMContentLoaded', async () => {
+
+    setTimeout(() => {
+        document.getElementById('splash').style.display = 'none';
+      }, 300);
+
+    // ==========================================================================================
+    // Resizable panels functionality ===========================================================
+    let isResizing = false;
+    let currentResizeHandle = null;
+
+    // Console resizing  
+    document.getElementById('consoleHandle').addEventListener('mousedown', (e) => {
+        isResizing = true;
+        currentResizeHandle = 'console';
+        document.body.style.cursor = 'col-resize';
+        document.getElementById('consoleHandle').classList.add('dragging');
+        e.preventDefault();
+    });
+ 
+    document.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+
+        if (currentResizeHandle === 'sidebar') {
+            const sidebar = document.getElementById('sidebar');
+            const newWidth = Math.max(200, Math.min(500, e.clientX - 12)); // 12px padding
+            sidebar.style.width = newWidth + 'px';
+        } else if (currentResizeHandle === 'console') {
+            const console = document.getElementById('console');
+            const container = document.getElementById('split');
+            const containerRect = container.getBoundingClientRect();
+            const newWidth = Math.max(250, Math.min(600, containerRect.right - e.clientX - 12));
+            console.style.width = newWidth + 'px';
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isResizing) {
+            isResizing = false;
+            currentResizeHandle = null;
+            document.body.style.cursor = '';
+            // document.getElementById('sidebarHandle').classList.remove('dragging');
+            document.getElementById('consoleHandle').classList.remove('dragging');
+        }
+    });
+
+    // Collapse/expand functionality
+    const sidebar = document.getElementById('sidebar');
+    const console = document.getElementById('console');
+    // const sidebarHandle = document.getElementById('sidebarHandle');
+    const consoleHandle = document.getElementById('consoleHandle');
+    const collapseSidebarBtn = document.getElementById('collapseSidebar');
+    const collapseConsoleBtn = document.getElementById('collapseConsole');
+    const expandSidebarBtn = document.getElementById('expandSidebar');
+    const expandConsoleBtn = document.getElementById('expandConsole');
+
+    let sidebarWidth = '280px';
+    let consoleWidth = '400px';
+
+    // Sidebar collapse/expand
+    collapseSidebarBtn.addEventListener('click', () => {
+        sidebarWidth = sidebar.style.width || '280px';
+        sidebar.classList.add('collapsed');
+        // sidebarHandle.style.display = 'none';
+        expandSidebarBtn.classList.remove('hidden');
+        collapseSidebarBtn.classList.add('rotated');
+    });
+
+    expandSidebarBtn.addEventListener('click', () => {
+        sidebar.classList.remove('collapsed');
+        sidebar.style.width = sidebarWidth;
+        // sidebarHandle.style.display = 'block';
+        expandSidebarBtn.classList.add('hidden');
+        collapseSidebarBtn.classList.remove('rotated');
+    });
+
+    // Console collapse/expand
+    collapseConsoleBtn.addEventListener('click', () => {
+        consoleWidth = console.style.width || '400px';
+        console.classList.add('collapsed');
+        consoleHandle.style.display = 'none';
+        expandConsoleBtn.classList.remove('hidden');
+        collapseConsoleBtn.classList.add('rotated');
+    });
+
+    expandConsoleBtn.addEventListener('click', () => {
+        console.classList.remove('collapsed');
+        console.style.width = consoleWidth;
+        consoleHandle.style.display = 'block';
+        expandConsoleBtn.classList.add('hidden');
+        collapseConsoleBtn.classList.remove('rotated');
+    });
+
+    // Prevent text selection during resize
+    document.addEventListener('selectstart', (e) => {
+        if (isResizing) e.preventDefault();
+    });
+    // End resizing panels =============================================================
+    // =================================================================================
+
     // create editor
     editor = monaco.editor.create(document.getElementById('editor'), {
-        value: `// Welcome to TinkerPad\nconsole.log('Hello TinkerPad')`,
+        value: `// Welcome to TinkerPad\nconsole.log('Hello TinkerPad 👋🏽')`,
         language: 'javascript',
         theme: 'vs-dark',
         automaticLayout: true,
@@ -81,11 +181,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // initial new playground
     newPlayground();
 
-    // toggle autocomplete
-    const autorun = document.getElementById('autorun');
-    autorun.addEventListener('change', (e) => {
-        // run on change if enabled
-    });
     function setAutocomplete(enabled) {
         editor.updateOptions({
             quickSuggestions: enabled,
@@ -95,24 +190,67 @@ document.addEventListener('DOMContentLoaded', async () => {
 // default true
     setAutocomplete(true);
 
+    // ipcRenderer.on('new-playground', newPlayground)
+    // ipcRenderer.on('save-playground', saveCurrentPlayground)
+    // ipcRenderer.on('run-code', runCode);
+    // ipcRenderer.on('clear-console', () => {
+    //     document.getElementById('consoleOutput').innerHTML = '';
+    // });
+
+    window.tinkerpad.onNewPlayground(() => {
+        newPlayground();
+      });
+    window.tinkerpad.onSavePlayground(() => {
+        showSaveModal();
+      });
+    window.tinkerpad.onRunCode(() => {
+        runCode();
+      });
+    window.tinkerpad.onClearConsole(() => {
+    document.getElementById('consoleOutput').innerHTML = '';
+    });
+
 });
+
 
 async function refreshPlaygrounds() {
     loadedPlaygrounds = await window.tinkerpad.getPlaygrounds();
-    const ul = document.getElementById('playgroundList');
-    ul.innerHTML = '';
-    for (const p of loadedPlaygrounds) {
-        const li = document.createElement('li');
-        li.textContent = p.title || '(untitled)';
-        li.className = 'p-2 rounded-md mb-1.5 cursor-pointer bg-transparent text-slate-300 hover:bg-white/5 hover:text-white transition-colors';
-        li.onclick = () => loadPlayground(p);
-        ul.appendChild(li);
-    }
-    
+    // const ul = document.getElementById('playgroundList'); 
+    // ul.innerHTML = '';
+    // for (const p of loadedPlaygrounds) {
+    //     const li = document.createElement('li'); 
+    //     li.textContent = p.title || '(untitled)'; 
+    //     li.className = 'p-2 rounded-md mb-1.5 cursor-pointer bg-transparent text-slate-300 hover:bg-white/5 hover:text-white transition-colors';
+    //     li.onclick = () => loadPlayground(p);
+    //     ul.appendChild(li);
+    // }
+     
     // Update dropdown
     updatePlaygroundDropdown();
 }
 
+// function updatePlaygroundDropdown() {
+//     const dropdownList = document.getElementById('playgroundDropdownList');
+//     const noPlaygroundsMessage = document.getElementById('noPlaygroundsMessage');
+    
+//     dropdownList.innerHTML = '';
+    
+//     if (loadedPlaygrounds.length === 0) {
+//         noPlaygroundsMessage.classList.remove('hidden');
+//     } else {
+//         noPlaygroundsMessage.classList.add('hidden');
+//         loadedPlaygrounds.forEach(p => {
+//             const li = document.createElement('li');
+//             li.textContent = p.title || '(untitled)';
+//             li.className = 'px-2 py-1 rounded cursor-pointer text-slate-300 hover:bg-white/5 hover:text-white transition-colors';
+//             li.onclick = () => {
+//                 loadPlayground(p);
+//                 hidePlaygroundDropdown();
+//             };
+//             dropdownList.appendChild(li);
+//         });
+//     }
+// }
 function updatePlaygroundDropdown() {
     const dropdownList = document.getElementById('playgroundDropdownList');
     const noPlaygroundsMessage = document.getElementById('noPlaygroundsMessage');
@@ -125,15 +263,50 @@ function updatePlaygroundDropdown() {
         noPlaygroundsMessage.classList.add('hidden');
         loadedPlaygrounds.forEach(p => {
             const li = document.createElement('li');
-            li.textContent = p.title || '(untitled)';
-            li.className = 'px-2 py-1 rounded cursor-pointer text-slate-300 hover:bg-white/5 hover:text-white transition-colors';
-            li.onclick = () => {
+            li.className = 'flex items-center justify-between px-2 py-1 rounded text-slate-300 hover:bg-white/5 hover:text-white transition-colors';
+
+            const nameBtn = document.createElement('button');
+            nameBtn.textContent = p.title || '(untitled)';
+            nameBtn.className = 'flex-1 text-left truncate text-sm';
+            nameBtn.onclick = () => {
                 loadPlayground(p);
                 hidePlaygroundDropdown();
             };
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = '×';
+            deleteBtn.className = 'ml-2 text-red-400 hover:text-red-300 font-bold text-sm leading-none';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                showDeleteModal(p);
+            };
+
+            li.appendChild(nameBtn);
+            li.appendChild(deleteBtn);
             dropdownList.appendChild(li);
         });
     }
+}
+
+function showDeleteModal(playground) {
+    const modal = document.getElementById('deleteModal');
+    const nameEl = document.getElementById('deletePlaygroundName');
+    nameEl.textContent = playground.title || '(untitled)';
+    
+    modal.classList.remove('hidden');
+
+    document.getElementById('confirmDelete').onclick = async () => {
+        await window.tinkerpad.deletePlayground(playground.id);
+        hideDeleteModal();
+        await refreshPlaygrounds();
+        showNotification('Playground deleted');
+    };
+
+    document.getElementById('cancelDelete').onclick = hideDeleteModal;
+}
+
+function hideDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
 }
 
 function togglePlaygroundDropdown() {
@@ -159,7 +332,7 @@ function hidePlaygroundDropdown() {
 function newPlayground() {
     currentPlayground = {
         title: 'Untitled',
-        code: `// New Playground\nconsole.log('hello')`,
+        code: `// New Playground\nconsole.log('Hello TinkerPad 👋🏽')`,
         libraries: []
     };
     editor.setValue(currentPlayground.code);
@@ -181,7 +354,7 @@ function updateCurrentPlaygroundName() {
     if (currentPlayground && currentPlayground.id) {
         nameElement.textContent = currentPlayground.title || 'Untitled';
     } else {
-        nameElement.textContent = 'New Playground';
+        nameElement.textContent = 'Unsaved';
     }
 }
 
@@ -264,7 +437,7 @@ function refreshLibrariesList() {
 function showNotification(message) {
     // Create a simple notification
     const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-md shadow-lg z-50';
+    notification.className = 'fixed top-4 right-4 bg-slate-600 text-white px-4 py-2 rounded-md shadow-lg z-50';
     notification.textContent = message;
     document.body.appendChild(notification);
     
@@ -273,72 +446,6 @@ function showNotification(message) {
         notification.remove();
     }, 3000);
 }
-
-
-function buildSandboxHtml(code, libs = []) {
-    // script that intercepts console.* and forwards to parent
-    const consoleShim = `
-    (function(){
-      function send(level,args){
-        try{ parent.postMessage({ kind: 'tinkerpad:console', level: level, args: args }, '*');}catch(e){}
-      }
-      ['log','info','warn','error','debug'].forEach(fn=>{
-        console[fn] = function(){
-          send(fn, Array.from(arguments).map(a => {
-            try { return (typeof a === 'object') ? JSON.stringify(a) : String(a); }
-            catch(e){ return String(a); }
-          }));
-        };
-      });
-      window.onerror = function(msg, src, ln, col, err){ send('error', [msg + ' (line:' + ln + ')']); };
-    })();
-  `;
-
-    // Generate library script tags (static approach)
-    const libraryScripts = libs.map(lib => `<script src="${lib}"></script>`).join('\n    ');
-
-    // User code execution script
-    const userCodeScript = `
-    <script>
-      ${consoleShim}
-      
-      // Wait for all libraries to load, then execute user code
-      window.addEventListener('load', function() {
-        // Small delay to ensure all libraries are fully initialized
-        setTimeout(function() {
-          try {
-            ${code}
-          } catch(e) { 
-            console.error(e && e.stack ? e.stack : e); 
-          }
-        }, 100);
-      });
-    </script>`;
-
-    return `<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src *; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline';">
-</head>
-<body>
-    ${libraryScripts}
-    ${userCodeScript}
-</body>
-</html>`;
-}
-
-// Modified runCode with data URL approach
-// function runCode() {
-//     const code = editor.getValue();
-//     const iframe = document.getElementById('sandbox');
-//     const srcdoc = buildSandboxHtml(code, libraries);
-//     console.log(srcdoc);
-//     // use srcdoc to fully reinitialize iframe on each run
-//     iframe.srcdoc = srcdoc;
-//     // unhide console area in case hidden
-// }
-
 
 
 function runCode() {
@@ -351,12 +458,60 @@ function runCode() {
     }, '*');
   }
 
+// function appendConsoleLine(level, args) {
+//     const out = document.getElementById('consoleOutput');
+//     const row = document.createElement('div');
+//     row.className = 'console-line ' + level;
+//     row.textContent = args.join(' ');
+//     out.appendChild(row);
+//     out.scrollTop = out.scrollHeight;
+// }
+
 function appendConsoleLine(level, args) {
-    const out = document.getElementById('consoleOutput');
-    const row = document.createElement('div');
-    row.className = 'console-line ' + level;
-    row.textContent = args.join(' ');
-    out.appendChild(row);
-    out.scrollTop = out.scrollHeight;
+    const consoleOutput = document.getElementById('consoleOutput');
+    const line = document.createElement('div');
+    line.className = `console-line mb-1 ${level}`;
+    
+    // Apply different colors for different log levels
+    switch(level) {
+        case 'error':
+            line.className += ' text-red-400';
+            break;
+        case 'warn':
+            line.className += ' text-yellow-400';
+            break;
+        case 'info':
+            line.className += ' text-blue-400';
+            break;
+        case 'debug':
+            line.className += ' text-purple-400';
+            break;
+        default:
+            line.className += ' text-slate-300';
+    }
+    
+    // Add timestamp
+    const timestamp = new Date().toLocaleTimeString();
+    const timestampSpan = document.createElement('span');
+    timestampSpan.className = 'text-slate-500 text-[10px] mr-2';
+    timestampSpan.textContent = `[${timestamp}]`;
+    
+    const contentSpan = document.createElement('span');
+    contentSpan.textContent = args.join(' ');
+    
+    line.appendChild(timestampSpan);
+    line.appendChild(contentSpan);
+    consoleOutput.appendChild(line);
+    
+    // Auto-scroll to bottom, but only if user was already at bottom
+    const isScrolledToBottom = consoleOutput.scrollHeight - consoleOutput.clientHeight <= consoleOutput.scrollTop + 1;
+    if (isScrolledToBottom) {
+        consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+    
+    // Limit console lines to prevent memory issues (keep last 1000 lines)
+    while (consoleOutput.children.length > 1000) {
+        consoleOutput.removeChild(consoleOutput.firstChild);
+    }
 }
 
