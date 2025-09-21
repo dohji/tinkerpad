@@ -7,11 +7,12 @@ let loadedPlaygrounds = [];
 let libraries = []; // array of CDN URLs for current playground
 let isPlaygroundDropdownOpen = false;
 
+
 document.addEventListener('DOMContentLoaded', async () => {
 
     setTimeout(() => {
         document.getElementById('splash').style.display = 'none';
-    }, 300);
+      }, 300);
 
     // ==========================================================================================
     // Resizable panels functionality ===========================================================
@@ -121,7 +122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // wire UI
     document.getElementById('runBtn').addEventListener('click', runCode);
-    document.getElementById('saveBtn').addEventListener('click', handleSave);
+    document.getElementById('saveBtn').addEventListener('click', showSaveModal);
     document.getElementById('newBtn').addEventListener('click', newPlayground);
     document.getElementById('clearConsoleBtn').addEventListener('click', () => {
         document.getElementById('consoleOutput').innerHTML = '';
@@ -160,18 +161,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Keyboard shortcuts
+    // keyboard: Ctrl+Enter -> run
     window.addEventListener('keydown', (e) => {
-        // Ctrl+Enter or Cmd+Enter -> run
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
             e.preventDefault();
             runCode();
-        }
-        
-        // Ctrl+S or Cmd+S -> save
-        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-            e.preventDefault();
-            handleSave();
         }
     });
 
@@ -193,30 +187,70 @@ document.addEventListener('DOMContentLoaded', async () => {
             suggestOnTriggerCharacters: enabled
         });
     }
-    // default true
+// default true
     setAutocomplete(true);
 
-    // Menu event handlers
+    // ipcRenderer.on('new-playground', newPlayground)
+    // ipcRenderer.on('save-playground', saveCurrentPlayground)
+    // ipcRenderer.on('run-code', runCode);
+    // ipcRenderer.on('clear-console', () => {
+    //     document.getElementById('consoleOutput').innerHTML = '';
+    // });
+
     window.tinkerpad.onNewPlayground(() => {
         newPlayground();
-    });
+      });
     window.tinkerpad.onSavePlayground(() => {
-        handleSave();
-    });
+        showSaveModal();
+      });
     window.tinkerpad.onRunCode(() => {
         runCode();
-    });
+      });
     window.tinkerpad.onClearConsole(() => {
-        document.getElementById('consoleOutput').innerHTML = '';
+    document.getElementById('consoleOutput').innerHTML = '';
     });
 
 });
 
+
 async function refreshPlaygrounds() {
     loadedPlaygrounds = await window.tinkerpad.getPlaygrounds();
+    // const ul = document.getElementById('playgroundList'); 
+    // ul.innerHTML = '';
+    // for (const p of loadedPlaygrounds) {
+    //     const li = document.createElement('li'); 
+    //     li.textContent = p.title || '(untitled)'; 
+    //     li.className = 'p-2 rounded-md mb-1.5 cursor-pointer bg-transparent text-slate-300 hover:bg-white/5 hover:text-white transition-colors';
+    //     li.onclick = () => loadPlayground(p);
+    //     ul.appendChild(li);
+    // }
+     
+    // Update dropdown
     updatePlaygroundDropdown();
 }
 
+// function updatePlaygroundDropdown() {
+//     const dropdownList = document.getElementById('playgroundDropdownList');
+//     const noPlaygroundsMessage = document.getElementById('noPlaygroundsMessage');
+    
+//     dropdownList.innerHTML = '';
+    
+//     if (loadedPlaygrounds.length === 0) {
+//         noPlaygroundsMessage.classList.remove('hidden');
+//     } else {
+//         noPlaygroundsMessage.classList.add('hidden');
+//         loadedPlaygrounds.forEach(p => {
+//             const li = document.createElement('li');
+//             li.textContent = p.title || '(untitled)';
+//             li.className = 'px-2 py-1 rounded cursor-pointer text-slate-300 hover:bg-white/5 hover:text-white transition-colors';
+//             li.onclick = () => {
+//                 loadPlayground(p);
+//                 hidePlaygroundDropdown();
+//             };
+//             dropdownList.appendChild(li);
+//         });
+//     }
+// }
 function updatePlaygroundDropdown() {
     const dropdownList = document.getElementById('playgroundDropdownList');
     const noPlaygroundsMessage = document.getElementById('noPlaygroundsMessage');
@@ -324,19 +358,6 @@ function updateCurrentPlaygroundName() {
     }
 }
 
-// Smart save handler - checks if playground already exists
-function handleSave() {
-    if (!currentPlayground) return;
-    
-    // If playground already has an ID (is saved), save directly without modal
-    if (currentPlayground.id) {
-        saveCurrentPlaygroundDirect();
-    } else {
-        // New playground, show modal to get title
-        showSaveModal();
-    }
-}
-
 function showSaveModal() {
     if (!currentPlayground) return;
     const modal = document.getElementById('saveModal');
@@ -347,22 +368,6 @@ function showSaveModal() {
     titleInput.select();
 }
 
-// Save existing playground without showing modal
-async function saveCurrentPlaygroundDirect() {
-    if (!currentPlayground) return;
-    
-    // Update the code and libraries but keep existing title and ID
-    currentPlayground.code = editor.getValue();
-    currentPlayground.libraries = libraries;
-    
-    const saved = await window.tinkerpad.savePlayground(currentPlayground);
-    currentPlayground = saved;
-    await refreshPlaygrounds();
-    updateCurrentPlaygroundName();
-    showNotification('Playground saved!');
-}
-
-// Save with modal (for new playgrounds or when explicitly naming)
 async function saveCurrentPlayground() {
     if (!currentPlayground) return;
     currentPlayground.title = document.getElementById('playgroundTitle').value || 'Untitled';
@@ -380,133 +385,21 @@ function hideSaveModal() {
     document.getElementById('saveModal').classList.add('hidden');
 }
 
-// function addLibraryFromInput() {
-//     const urlInput = document.getElementById('libraryUrlInput');
-//     const url = urlInput.value.trim();
-//     if (!url) return;
-    
-//     // Check if library already exists
-//     if (libraries.includes(url)) {
-//         showNotification('Library already added');
-//         return;
-//     }
-    
-//     libraries.push(url);
-//     urlInput.value = '';
-//     refreshLibrariesList();
-//     showNotification('Library added: ' + url);
-// }
 function addLibraryFromInput() {
     const urlInput = document.getElementById('libraryUrlInput');
     const url = urlInput.value.trim();
     if (!url) return;
     
-    // Validate CDN URL
-    if (!isValidCdnUrl(url)) {
-        showNotification('Please enter a valid CDN URL (https://)', 'error');
-        return;
-    }
-    
     // Check if library already exists
     if (libraries.includes(url)) {
-        showNotification('Library already added', 'warning');
+        showNotification('Library already added');
         return;
     }
     
     libraries.push(url);
     urlInput.value = '';
     refreshLibrariesList();
-    showNotification('Library added: ' + getLibraryName(url), 'success');
-}
-
-function isValidCdnUrl(url) {
-    try {
-        const urlObj = new URL(url);
-        
-        // Must be HTTPS
-        if (urlObj.protocol !== 'https:') {
-            return false;
-        }
-        
-        // Must be a JavaScript file
-        const validExtensions = ['.js', '.min.js', '.mjs'];
-        const pathname = urlObj.pathname.toLowerCase();
-        if (!validExtensions.some(ext => pathname.endsWith(ext))) {
-            return false;
-        }
-        
-        // Known CDN domains (add more as needed)
-        const allowedCdnDomains = [
-            'cdnjs.cloudflare.com',
-            'unpkg.com',
-            'cdn.jsdelivr.net',
-            'esm.sh',
-            'cdn.skypack.dev',
-            'ga.jspm.io',
-            'esm.run'
-        ];
-        
-        return allowedCdnDomains.includes(urlObj.hostname);
-        
-    } catch (error) {
-        // Invalid URL format
-        return false;
-    }
-}
-
-function getLibraryName(url) {
-    try {
-        const urlObj = new URL(url);
-        const pathname = urlObj.pathname;
-        const filename = pathname.split('/').pop();
-        return filename || url;
-    } catch {
-        return url;
-    }
-}
-
-// Updated showNotification to support different types
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    
-    let bgColor = 'bg-slate-600'; // default
-    switch(type) {
-        case 'success':
-            bgColor = 'bg-green-600';
-            break;
-        case 'error':
-            bgColor = 'bg-red-600';
-            break;
-        case 'warning':
-            bgColor = 'bg-yellow-600';
-            break;
-    }
-    
-    notification.className = `fixed bottom-6 ${bgColor} text-white px-4 py-2 rounded-md shadow-lg z-50 transition-all duration-300 ease-in-out max-w-sm`;
-    notification.textContent = message;
-    
-    // Use CSS to properly center horizontally
-    notification.style.left = '50%';
-    notification.style.transform = 'translateX(-50%) translateY(20px)';
-    notification.style.opacity = '0';
-    
-    document.body.appendChild(notification);
-    
-    // Trigger animation
-    requestAnimationFrame(() => {
-        notification.style.opacity = '1';
-        notification.style.transform = 'translateX(-50%) translateY(0)';
-    });
-    
-    // Remove after 3 seconds with fade out animation
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateX(-50%) translateY(20px)';
-        
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
-    }, 3000);
+    showNotification('Library added: ' + url);
 }
 
 function removeLibrary(url) {
@@ -541,28 +434,38 @@ function refreshLibrariesList() {
     });
 }
 
-// function showNotification(message) {
-//     // Create a simple notification
-//     const notification = document.createElement('div');
-//     notification.className = 'fixed top-4 right-4 bg-slate-600 text-white px-4 py-2 rounded-md shadow-lg z-50';
-//     notification.textContent = message;
-//     document.body.appendChild(notification);
+function showNotification(message) {
+    // Create a simple notification
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-slate-600 text-white px-4 py-2 rounded-md shadow-lg z-50';
+    notification.textContent = message;
+    document.body.appendChild(notification);
     
-//     // Remove after 3 seconds
-//     setTimeout(() => {
-//         notification.remove();
-//     }, 3000);
-// }
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
 
 function runCode() {
     const code = editor.getValue();
     const iframe = document.getElementById('sandbox');
     iframe.contentWindow.postMessage({
-        kind: 'tinkerpad:run',
-        code,
-        libraries
+      kind: 'tinkerpad:run',
+      code,
+      libraries
     }, '*');
-}
+  }
+
+// function appendConsoleLine(level, args) {
+//     const out = document.getElementById('consoleOutput');
+//     const row = document.createElement('div');
+//     row.className = 'console-line ' + level;
+//     row.textContent = args.join(' ');
+//     out.appendChild(row);
+//     out.scrollTop = out.scrollHeight;
+// }
 
 function appendConsoleLine(level, args) {
     const consoleOutput = document.getElementById('consoleOutput');
@@ -611,3 +514,4 @@ function appendConsoleLine(level, args) {
         consoleOutput.removeChild(consoleOutput.firstChild);
     }
 }
+
