@@ -73,7 +73,13 @@ const createWindow = () => {
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
     // Open the DevTools (comment out for production)
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
+
+    app.setAboutPanelOptions({
+      applicationName: "TinkerPad",
+      applicationVersion: app.getVersion(),
+      copyright: "© 2025 Rich Dodzi Atitsusi",
+    });
 
     // IPC handlers for playground storage
     ipcMain.handle('tinkerpad:get-playgrounds', async () => {
