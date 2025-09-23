@@ -4,11 +4,6 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
-
-permissions:
-  contents: write
-  pull-requests: write
 
 jobs:
   release-please:
@@ -21,42 +16,34 @@ jobs:
         id: release
         with:
           release-type: node
+          skip-github-pull-request: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     needs: release-please
-    if: ${{ needs.release-please.outputs.release_created == 'true' }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+    if: needs.release-please.outputs.release_created == 'true'
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.os == 'ubuntu-latest' }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install dependencies
-        run: npm install
+      - run: npm install
+      - run: npm run make
 
-      - name: Make distributable
-        run: npm run make
-
-      - name: Upload release assets
+      - name: Upload installers to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.release-please.outputs.tag_name }}
           files: |
             out/make/**/*.exe
             out/make/**/*.dmg
-            out/make/**/*.zip
             out/make/**/*.deb
             out/make/**/*.rpm
-          name: TinkerPad-${{ matrix.os }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
