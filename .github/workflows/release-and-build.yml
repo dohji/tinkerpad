@@ -2,8 +2,8 @@ name: Release and Build Electron App
 
 on:
   release:
-    types: [published]   # run when a GitHub Release is published
-  workflow_dispatch:     # manual trigger too
+    types: [published]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -11,7 +11,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        # only macOS + Windows for now
+        os: [macos-latest, windows-latest]
 
     steps:
       - name: Checkout code
@@ -35,6 +36,5 @@ jobs:
             out/make/**/*.zip
             out/make/**/*.dmg
             out/make/**/*.exe
-            out/make/**/*.AppImage
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
