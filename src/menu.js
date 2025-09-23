@@ -70,7 +70,7 @@ const buildMenu = (mainWindow) => {
     {
       label: 'View',
       submenu: [
-        // { role: 'reload' },
+        { role: 'reload' },
         // { role: 'forcereload' },
         // { role: 'toggledevtools' },
         // { type: 'separator' },

@@ -6,15 +6,30 @@ module.exports = {
     asar: true,
     // ✅ Use the same base icon path (no extension) for cross-platform
     icon: './assets/icon',
+    extraResource: [
+      './assets/'
+    ],
   },
   rebuildConfig: {},
   makers: [
-    {
-      name: '@electron-forge/maker-squirrel', // Windows installer
-      config: {
-        setupIcon: './assets/icon.ico',
+    // {
+    //   // name: '@electron-forge/maker-squirrel', // Windows installer
+    //   config: {
+    //     setupIcon: './assets/icon.ico',
+    //   },
+    //   name: '@electron-forge/maker-zip',
+    //   platforms: ['win32'],
+    // },
+      {
+          name: '@electron-forge/maker-squirrel',
+          config: {
+              setupIcon: './assets/icon.ico',
+          },
       },
-    },
+      {
+          name: '@electron-forge/maker-zip',
+          platforms: ['win32'],
+      },
     {
       name: '@electron-forge/maker-zip', // macOS zip build
       platforms: ['darwin'],

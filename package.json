@@ -7,9 +7,15 @@
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "lint": "echo \"No linting configured\"",
+
+    "make": "electron-forge make",
+    "make:mac": "electron-forge make --platform=darwin",
+    "make:win": "electron-forge make --platform=win32 --arch=x64",
+    "make:win-arm": "electron-forge make --platform=win32 --arch=arm64",
+    "make:linux": "electron-forge make --platform=linux --arch=x64",
+    "make:all": "electron-forge make --platform=darwin,win32,linux --arch=x64"
   },
   "keywords": [],
   "author": {
@@ -20,6 +26,7 @@
   "devDependencies": {
     "@electron-forge/cli": "^7.9.0",
     "@electron-forge/maker-deb": "^7.9.0",
+    "@electron-forge/maker-dmg": "^7.9.0",
     "@electron-forge/maker-rpm": "^7.9.0",
     "@electron-forge/maker-squirrel": "^7.9.0",
     "@electron-forge/maker-zip": "^7.9.0",
