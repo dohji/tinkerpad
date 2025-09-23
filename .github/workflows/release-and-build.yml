@@ -1,35 +1,20 @@
 name: Release and Build Electron App
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]   # whenever a GitHub Release is published (manual or automated)
+  workflow_dispatch:     # allow manual trigger too
 
 jobs:
-  release-please:
-    runs-on: ubuntu-latest
-    outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      tag_name: ${{ steps.release.outputs.tag_name }}
-    steps:
-      - name: Release Please
-        id: release
-        uses: googleapis/release-please-action@v4
-        with:
-          release-type: node
-          package-name: tinkerpad
-          token: ${{ secrets.GITHUB_TOKEN }}
-
   build:
-    needs: release-please
-    if: needs.release-please.outputs.release_created == 'true'
+    name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [macos-latest, windows-latest, ubuntu-latest]
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -38,22 +23,13 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Build App
+      - name: Make distributable
         run: npm run make
 
-      - name: Upload Installers to Release
-        uses: softprops/action-gh-release@v1
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: ${{ needs.release-please.outputs.tag_name }}
-          files: |
-            out/make/**/*.exe
-            out/make/**/*.msi
-            out/make/**/*.dmg
-            out/make/**/*.zip
-            out/make/**/*.deb
-            out/make/**/*.rpm
-            out/make/**/*.AppImage
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: build-${{ matrix.os }}
+          path: out/make/**
