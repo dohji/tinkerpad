@@ -9,6 +9,7 @@ module.exports = {
     extraResource: [
       './assets/'
     ],
+      executableName: 'tinkerpad'
   },
   rebuildConfig: {},
   makers: [
@@ -26,10 +27,10 @@ module.exports = {
               setupIcon: './assets/icon.ico',
           },
       },
-      {
-          name: '@electron-forge/maker-zip',
-          platforms: ['win32'],
-      },
+      // {
+      //     name: '@electron-forge/maker-zip',
+      //     platforms: ['win32'],
+      // },
     {
       name: '@electron-forge/maker-zip', // macOS zip build
       platforms: ['darwin'],
