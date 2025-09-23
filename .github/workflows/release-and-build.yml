@@ -14,10 +14,10 @@ jobs:
     steps:
       - name: Release Please
         id: release
-        uses: google-github-actions/release-please-action@v4
+        uses: googleapis/release-please-action@v4
         with:
           release-type: node
-          package-name: your-app-name
+          package-name: tinkerpad
           token: ${{ secrets.GITHUB_TOKEN }}
 
   build:
@@ -43,15 +43,17 @@ jobs:
       - name: Build App
         run: npm run make
 
-      - name: Upload Release Artifacts
+      - name: Upload Installers to Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.release-please.outputs.tag_name }}
           files: |
-            out/make/**/*.zip
-            out/make/**/*.dmg
             out/make/**/*.exe
+            out/make/**/*.msi
+            out/make/**/*.dmg
+            out/make/**/*.zip
             out/make/**/*.deb
             out/make/**/*.rpm
+            out/make/**/*.AppImage
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
