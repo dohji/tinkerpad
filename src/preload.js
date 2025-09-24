@@ -15,5 +15,9 @@ contextBridge.exposeInMainWorld('tinkerpad', {
     onNewPlayground: (callback) => ipcRenderer.on('new-playground', callback),
 
     // simple UX helpers
-    openExternal: (url) => ipcRenderer.invoke('tinkerpad:open-external', url)
+    openExternal: (url) => ipcRenderer.invoke('tinkerpad:open-external', url),
+
+    minimize: () => ipcRenderer.invoke('window-minimize'),
+    maximize: () => ipcRenderer.invoke('window-maximize'),
+    close: () => ipcRenderer.invoke('window-close'),
 });

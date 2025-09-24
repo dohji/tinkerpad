@@ -81,48 +81,69 @@ const createWindow = () => {
       copyright: "© 2025 Rich Dodzi Atitsusi",
     });
 
-    // IPC handlers for playground storage
-    ipcMain.handle('tinkerpad:get-playgrounds', async () => {
-        await ensureDataDir();
-        const files = await fs.readdir(dataDir);
-        const playgrounds = [];
-        
-        for (const file of files) {
-            if (!file.endsWith('.json')) continue;
-            try {
-                const raw = await fs.readFile(path.join(dataDir, file), 'utf-8');
-                playgrounds.push(JSON.parse(raw));
-            } catch (e) { 
-                /* ignore malformed */ 
-            }
-        }
-        
-        // newest first
-        playgrounds.sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at));
-        return playgrounds;
-    });
-
-    ipcMain.handle('tinkerpad:save-playground', async (event, playground) => {
-        await ensureDataDir();
-        const id = playground.id || uuidv4();
-        const now = new Date().toISOString();
-        playground.id = id;
-        playground.updated_at = now;
-        if (!playground.created_at) playground.created_at = now;
-        
-        await fs.writeFile(path.join(dataDir, `${id}.json`), JSON.stringify(playground, null, 2), 'utf-8');
-        return playground;
-    });
-
-    ipcMain.handle('tinkerpad:delete-playground', async (event, id) => {
-        try {
-            await fs.unlink(path.join(dataDir, `${id}.json`));
-            return true;
-        } catch (e) { 
-            return false; 
-        }
-    });
 };
+
+
+// IPC handlers for playground storage
+ipcMain.handle('tinkerpad:get-playgrounds', async () => {
+    await ensureDataDir();
+    const files = await fs.readdir(dataDir);
+    const playgrounds = [];
+
+    for (const file of files) {
+        if (!file.endsWith('.json')) continue;
+        try {
+            const raw = await fs.readFile(path.join(dataDir, file), 'utf-8');
+            playgrounds.push(JSON.parse(raw));
+        } catch (e) {
+            /* ignore malformed */
+        }
+    }
+
+    // newest first
+    playgrounds.sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at));
+    return playgrounds;
+});
+
+ipcMain.handle('tinkerpad:save-playground', async (event, playground) => {
+    await ensureDataDir();
+    const id = playground.id || uuidv4();
+    const now = new Date().toISOString();
+    playground.id = id;
+    playground.updated_at = now;
+    if (!playground.created_at) playground.created_at = now;
+
+    await fs.writeFile(path.join(dataDir, `${id}.json`), JSON.stringify(playground, null, 2), 'utf-8');
+    return playground;
+});
+
+ipcMain.handle('tinkerpad:delete-playground', async (event, id) => {
+    try {
+        await fs.unlink(path.join(dataDir, `${id}.json`));
+        return true;
+    } catch (e) {
+        return false;
+    }
+});
+
+// In main.js, add these IPC handlers:
+ipcMain.handle('window-minimize', () => {
+    BrowserWindow.getFocusedWindow()?.minimize();
+});
+
+ipcMain.handle('window-maximize', () => {
+    const win = BrowserWindow.getFocusedWindow();
+    if (win?.isMaximized()) {
+        win.unmaximize();
+    } else {
+        win?.maximize();
+    }
+});
+
+ipcMain.handle('window-close', () => {
+    BrowserWindow.getFocusedWindow()?.close();
+});
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

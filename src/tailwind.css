@@ -108,6 +108,7 @@ html, body {
   -webkit-app-region: drag;
   -webkit-user-select: none;
   user-select: none;
+    flex-shrink: 0;
 }
 
 .no-drag {

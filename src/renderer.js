@@ -9,6 +9,8 @@ let isPlaygroundDropdownOpen = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
 
+    setupPlatformHeader()
+
     setTimeout(() => {
         document.getElementById('splash').style.display = 'none';
     }, 300);
@@ -211,6 +213,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
 });
+
+// Platform detection and header adaptation
+function setupPlatformHeader() {
+    const trafficLightsSpace = document.getElementById('trafficLightsSpace');
+    const brandIcon = document.getElementById('brandIcon');
+    const brandTitle = document.getElementById('brandTitle');
+    const headerRight = document.getElementById('headerRight');
+    const windowControls = document.getElementById('windowControls');
+    const minimizeBtn = document.getElementById('minimizeBtn');
+    const maximizeBtn = document.getElementById('maximizeBtn');
+    const closeBtn = document.getElementById('closeBtn');
+
+    // Detect platform via user agent or electron API
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 ||
+        (window.process && window.process.platform === 'darwin');
+    const isWindows = navigator.platform.toUpperCase().indexOf('WIN') >= 0 ||
+        (window.process && window.process.platform === 'win32');
+    const isLinux = navigator.platform.toUpperCase().indexOf('LINUX') >= 0 ||
+        (window.process && window.process.platform === 'linux');
+
+    if (isMac) {
+        // macOS: Show traffic lights space, no custom controls
+        trafficLightsSpace.classList.remove('hidden');
+        brandTitle.classList.remove('pl-4');
+    } else if (isWindows || isLinux) {
+        // Windows/Linux: Show custom window controls, no traffic lights space
+        windowControls.classList.remove('hidden');
+        windowControls.classList.add('flex');
+        brandTitle.classList.add('pl-0');
+        headerRight.classList.add('pr-2'); // Reduce right padding
+        brandIcon.classList.add('inline-block');
+
+        // Add window control functionality
+        if (window.tinkerpad) {
+            minimizeBtn.addEventListener('click', () => window.tinkerpad.minimize());
+            maximizeBtn.addEventListener('click', () => window.tinkerpad.maximize());
+            closeBtn.addEventListener('click', () => window.tinkerpad.close());
+        }
+    }
+}
 
 async function refreshPlaygrounds() {
     loadedPlaygrounds = await window.tinkerpad.getPlaygrounds();
