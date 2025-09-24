@@ -8,7 +8,7 @@
 
     <!-- Add this right after <body> -->
 <div id="splash" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; display: flex; align-items: center; justify-content: center; z-index: 9999;">
-    <img src="<%= require('../assets/icon-png.png') %>" alt="A static image" class="size-20" style="width: 60px; height: 60px;"> 
+    <img src="<%= require('../assets/icon-png.png') %>" alt="Logo" class="size-20" style="width: 60px; height: 60px;">
   </div>
    
 <div id="app" class="h-screen m-0 bg-slate-900 font-inter flex flex-col">  
@@ -21,7 +21,7 @@
 
             <!-- <img src="/assets/icon-png.png" alt="A static image" class="size-8"> -->  
             <div class="brand font-bold tracking-wider no-drag pl-0" id="brandTitle">
-                <img src="/assets/icon-png.png" alt="A static image" class="hidden" id="brandIcon" style="width: 35px; height: 35px; vertical-align: middle; margin-right: 8px;">
+                <img src="<%= require('../assets/icon-png.png') %>" alt="Logo" class="hidden" id="brandIcon" style="width: 35px; height: 35px; vertical-align: middle; margin-right: 8px;">
                 TinkerPad
             </div>
             <div class="flex items-center gap-2 no-drag">
@@ -33,29 +33,29 @@
                 </button>
             </div>
         </div>
-        <div class="actions flex items-center gap-2 no-drag" id="headerRight">
+        <div class="actions flex items-center gap-2 no-drag pl-4" id="headerRight">
             <button id="runBtn" class="px-3 py-1.5 rounded-md border-0 bg-green-700 text-white cursor-pointer hover:bg-green-800 text-sm">Run (Ctrl+Enter)</button>
             <button id="saveBtn" class="px-3 py-1.5 rounded-md border-0 bg-white/5 text-slate-300 cursor-pointer hover:bg-white/10 text-sm">Save Playground</button>
             <button id="newBtn" class="px-3 py-1.5 rounded-md border-0 bg-white/5 text-slate-300 cursor-pointer hover:bg-white/10 text-sm">New</button>
 
             <!-- Windows/Linux window controls - hidden by default -->
-            <div class="window-controls hidden items-center gap-1 ml-2" id="windowControls">
-                <button class="w-8 h-8 rounded hover:bg-white/10 flex items-center justify-center" id="minimizeBtn" title="Minimize">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M4 8h8v1H4z"/>
-                    </svg>
-                </button>
-                <button class="w-8 h-8 rounded hover:bg-white/10 flex items-center justify-center" id="maximizeBtn" title="Maximize">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M3 3h10v10H3z" fill="none" stroke="currentColor" stroke-width="1"/>
-                    </svg>
-                </button>
-                <button class="w-8 h-8 rounded hover:bg-red-500 flex items-center justify-center" id="closeBtn" title="Close">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                    </svg>
-                </button>
-            </div>
+<!--            <div class="window-controls hidden items-center gap-1 ml-2" id="windowControls">-->
+<!--                <button class="w-8 h-8 rounded hover:bg-white/10 flex items-center justify-center" id="minimizeBtn" title="Minimize">-->
+<!--                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">-->
+<!--                        <path d="M4 8h8v1H4z"/>-->
+<!--                    </svg>-->
+<!--                </button>-->
+<!--                <button class="w-8 h-8 rounded hover:bg-white/10 flex items-center justify-center" id="maximizeBtn" title="Maximize">-->
+<!--                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">-->
+<!--                        <path d="M3 3h10v10H3z" fill="none" stroke="currentColor" stroke-width="1"/>-->
+<!--                    </svg>-->
+<!--                </button>-->
+<!--                <button class="w-8 h-8 rounded hover:bg-red-500 flex items-center justify-center" id="closeBtn" title="Close">-->
+<!--                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">-->
+<!--                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>-->
+<!--                    </svg>-->
+<!--                </button>-->
+<!--            </div>-->
 
         </div>
     </header>
