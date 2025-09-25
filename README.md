@@ -20,6 +20,12 @@ A modern JavaScript playground built with Electron, featuring a Monaco Editor, l
 - **Toast Notifications** - User feedback for all actions
 - **Sandboxed Execution** - Secure code execution in isolated iframe environment
 
+## Download
+- macOS: [Download .dmg](https://github.com/dohji/tinkerpad/releases/download/v1.1.0/TinkerPad-macOS-1.1.0.dmg)
+- Windows: [Download .exe](https://github.com/dohji/tinkerpad/releases/download/v1.1.0/TinkerPad-windows-1.1.0.exe)
+- Linux: [Download .deb](https://github.com/dohji/tinkerpad/releases/download/v1.1.0/TinkerPad-linux-1.1.0.deb)
+- Linux: [Download .rpm](https://github.com/dohji/tinkerpad/releases/download/v1.1.0/TinkerPad-linux-1.1.0.rpm)
+
 ## Installation
 
 ### Prerequisites
