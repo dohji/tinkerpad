@@ -424,22 +424,7 @@ function hideSaveModal() {
     document.getElementById('saveModal').classList.add('hidden');
 }
 
-// function addLibraryFromInput() {
-//     const urlInput = document.getElementById('libraryUrlInput');
-//     const url = urlInput.value.trim();
-//     if (!url) return;
-    
-//     // Check if library already exists
-//     if (libraries.includes(url)) {
-//         showNotification('Library already added');
-//         return;
-//     }
-    
-//     libraries.push(url);
-//     urlInput.value = '';
-//     refreshLibrariesList();
-//     showNotification('Library added: ' + url);
-// }
+
 function addLibraryFromInput() {
     const urlInput = document.getElementById('libraryUrlInput');
     const url = urlInput.value.trim();
@@ -585,18 +570,7 @@ function refreshLibrariesList() {
     });
 }
 
-// function showNotification(message) {
-//     // Create a simple notification
-//     const notification = document.createElement('div');
-//     notification.className = 'fixed top-4 right-4 bg-slate-600 text-white px-4 py-2 rounded-md shadow-lg z-50';
-//     notification.textContent = message;
-//     document.body.appendChild(notification);
-    
-//     // Remove after 3 seconds
-//     setTimeout(() => {
-//         notification.remove();
-//     }, 3000);
-// }
+
 
 function runCode() {
     const code = editor.getValue();
