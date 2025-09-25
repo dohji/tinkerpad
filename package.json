@@ -15,6 +15,7 @@
     "make:win-arm": "electron-forge make --platform=win32 --arch=arm64",
     "make:linux": "electron-forge make --platform=linux --arch=x64",
     "make:linux-arm": "electron-forge make --platform=linux --arch=arm64",
+    "make:linux-arm64": "electron-forge make --platform=linux --arch=arm64",
     "make:all": "electron-forge make --platform=darwin,win32,linux --arch=x64,arm64"
   },
   "keywords": [],

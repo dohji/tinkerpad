@@ -42,7 +42,7 @@ jobs:
           if [[ "${{ matrix.os }}" == "ubuntu-24.04-arm64" ]]; then
             npm run make:linux-arm64
           else
-            npm run make:linux-x64
+            npm run make:linux
           fi
 
       - name: Upload Artifacts
